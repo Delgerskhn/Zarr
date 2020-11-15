@@ -5,14 +5,17 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZarNet.Models
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum Priority { Low, Normal, High, Urgent }
-
     public class EmployeeTask
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public int Task_ID { set; get; }
         public int Task_Parent_ID { set; get; }
 

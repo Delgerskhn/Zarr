@@ -14,6 +14,6 @@ namespace Zar.Models
         public string Price { get; set; }
         public string Img { get; set; }
         public Company company { get; set; }
-        public string industry { get; set; }
+        public string Industry { get; set; }
     }
 }

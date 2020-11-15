@@ -42,22 +42,21 @@ namespace ZarNet
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+
+            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
+            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
 
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
-                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                facebookOptions.AppId = Configuration.GetConnectionString("Authentication:Facebook:AppId");
+                facebookOptions.AppSecret = Configuration.GetConnectionString("Authentication:Facebook:AppSecret");
             });
             services.AddAuthentication()
             .AddGoogle(options =>
             {
-                IConfigurationSection googleAuthNSection =
-                    Configuration.GetSection("Authentication:Google");
-
-                options.ClientId = googleAuthNSection["ClientId"];
-                options.ClientSecret = googleAuthNSection["ClientSecret"];
+                options.ClientId = Configuration.GetConnectionString("Authentication:Google:ClientId");
+                options.ClientSecret = Configuration.GetConnectionString("Authentication:Google:ClientSecret");
             });
             services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             services.AddRazorPages();

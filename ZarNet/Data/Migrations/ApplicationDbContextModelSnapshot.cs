@@ -247,6 +247,9 @@ namespace ZarNet.Migrations
                     b.Property<string>("Img")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Industry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MarkCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -259,14 +262,80 @@ namespace ZarNet.Migrations
                     b.Property<long?>("companyId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("industry")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("companyId");
 
                     b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("ZarNet.Models.EmployeeTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Has_Items")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Task_Assigned_EmployeeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_Assigned_Employee_ID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_Completion")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Task_Due_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Task_ID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_Owner_ID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_Parent_ID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_Priority")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Task_Start_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Task_Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Task_Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Task_Assigned_EmployeeID");
+
+                    b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("ZarNet.Models.TaskEmployee", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -325,6 +394,13 @@ namespace ZarNet.Migrations
                     b.HasOne("Zar.Models.Company", "company")
                         .WithMany()
                         .HasForeignKey("companyId");
+                });
+
+            modelBuilder.Entity("ZarNet.Models.EmployeeTask", b =>
+                {
+                    b.HasOne("ZarNet.Models.TaskEmployee", "Task_Assigned_Employee")
+                        .WithMany()
+                        .HasForeignKey("Task_Assigned_EmployeeID");
                 });
 #pragma warning restore 612, 618
         }

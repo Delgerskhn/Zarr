@@ -17,20 +17,8 @@ namespace ZarNet.Data
             : base(options)
         {
         }
-        public ICollection<EmployeeTask> Tasks ;
-        public IEnumerable<TaskEmployee> Employees => SampleData.TaskEmployees;
-        protected  IEnumerable<EmployeeTask> Source => SampleData.EmployeeTasks;
-        protected  int GetKey(EmployeeTask item)
-        {
-            return item.Task_ID;
-        }
-
-        protected  void SetKey(EmployeeTask item, int key)
-        {
-            item.Task_ID = key;
-        }
-
         public DbSet<Post> Post { get; set; }
-
+        public DbSet<EmployeeTask> Tasks { get; set; }
+        public DbSet<TaskEmployee> Employees { get; set; }
     }
 }
