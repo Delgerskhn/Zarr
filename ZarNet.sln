@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZarNet", "ZarNet\ZarNet.csproj", "{0A59ADB4-3066-4BE4-9AC6-5F0BC56930BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZarNet", "ZarNet\ZarNet.csproj", "{0A59ADB4-3066-4BE4-9AC6-5F0BC56930BA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevExtreme NuGet.config", "DevExtreme NuGet.config", "{8ED176C0-8563-4C02-B173-5E2A92E6F673}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

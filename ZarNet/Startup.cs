@@ -27,12 +27,13 @@ namespace ZarNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnectionProd")));
-            } else
+            }
+            else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -40,8 +41,11 @@ namespace ZarNet
             }
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
-            /*services.AddAuthentication().AddFacebook(facebookOptions =>
+
+            //services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+
+
+            services.AddAuthentication().AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
                 facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
@@ -54,8 +58,8 @@ namespace ZarNet
 
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
-            });*/
-            services.AddControllersWithViews();
+            });
+            services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             services.AddRazorPages();
         }
 
@@ -85,7 +89,7 @@ namespace ZarNet
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Posts}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

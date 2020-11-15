@@ -259,6 +259,9 @@ namespace ZarNet.Migrations
                     b.Property<long?>("companyId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("industry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("companyId");
