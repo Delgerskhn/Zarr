@@ -18,7 +18,6 @@ namespace ZarNet.Data
         {
         }
         public DbSet<Post> Post { get; set; }
-        public DbSet<EmployeeTask> Tasks { get; set; }
-        public DbSet<TaskEmployee> Employees { get; set; }
+        public DbSet<Task> Task { get; set; }
     }
 }

@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace ZarNet.Models
 {
-    public class TaskEmployee
+    public class Task
 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { set; get; }
+        public int ParentID { set; get; }
         public string Name { set; get; }
         public string Picture { set; get; }
     }

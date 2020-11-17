@@ -27,13 +27,13 @@ namespace ZarNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+          /*  if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnectionProd")));
             }
-            else
+            else*/
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -43,8 +43,8 @@ namespace ZarNet
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+            /*services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
+            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();*/
 
 
             services.AddAuthentication().AddFacebook(facebookOptions =>

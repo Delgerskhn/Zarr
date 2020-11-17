@@ -3,7 +3,32 @@
 @{
     ViewData["Title"] = "Index";
 }
+@(Html.DevExtreme().TreeList<ZarNet.Models.Task>()
+    .DataSource(ds => ds.Mvc()
+        .Controller("Tasks")
+        .LoadAction("Get")
+        .InsertAction("Post")
+        .UpdateAction("Put")
+        .DeleteAction("Delete")
+        .Key("ID")
+    )
+    .RootValue(0)
+    .ParentIdExpr("ParentID")
+    .RemoteOperations(o => o.Filtering(true).Grouping(true).Sorting(true))
+    .Columns(columns => {
 
+        columns.AddFor(m => m.ParentID);
+
+        columns.AddFor(m => m.Name);
+
+        columns.AddFor(m => m.Picture);
+    })
+    .Editing(e => e
+        .AllowAdding(true)
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+    )
+)
 <h1>Index</h1>
 
 <p>

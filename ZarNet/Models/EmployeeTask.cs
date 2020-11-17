@@ -22,7 +22,7 @@ namespace ZarNet.Models
         [Required]
         [Display(Name = "Assigned")]
         public int Task_Assigned_Employee_ID { set; get; }
-        public TaskEmployee Task_Assigned_Employee { set; get; }
+        public Task Task_Assigned_Employee { set; get; }
         public int Task_Owner_ID { set; get; }
         [Required]
         [Display(Name = "Task Subject")]
