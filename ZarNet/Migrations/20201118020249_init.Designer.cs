@@ -10,8 +10,8 @@ using ZarNet.Data;
 namespace ZarNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201117121221_initial")]
-    partial class initial
+    [Migration("20201118020249_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -221,35 +221,56 @@ namespace ZarNet.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Zar.Models.Company", b =>
+            modelBuilder.Entity("ZarNet.Models.Category", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("ZarNet.Models.Company", b =>
+                {
+                    b.Property<int>("CompanyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CompanyId");
 
                     b.ToTable("Company");
                 });
 
-            modelBuilder.Entity("Zar.Models.Post", b =>
+            modelBuilder.Entity("ZarNet.Models.Post", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Img")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Industry")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MarkCode")
@@ -261,35 +282,14 @@ namespace ZarNet.Migrations
                     b.Property<string>("Price")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("companyId")
-                        .HasColumnType("bigint");
+                    b.HasKey("PostId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("CategoryId");
 
-                    b.HasIndex("companyId");
+                    b.HasIndex("CompanyId")
+                        .IsUnique();
 
                     b.ToTable("Post");
-                });
-
-            modelBuilder.Entity("ZarNet.Models.Task", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ParentID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Task");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -343,11 +343,19 @@ namespace ZarNet.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Zar.Models.Post", b =>
+            modelBuilder.Entity("ZarNet.Models.Post", b =>
                 {
-                    b.HasOne("Zar.Models.Company", "company")
+                    b.HasOne("ZarNet.Models.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("companyId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZarNet.Models.Company", "Company")
+                        .WithOne("Posts")
+                        .HasForeignKey("ZarNet.Models.Post", "CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

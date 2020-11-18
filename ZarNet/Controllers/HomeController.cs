@@ -23,6 +23,11 @@ namespace ZarNet.Controllers
             return View();
         }
 
+        public IActionResult AddPost()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
