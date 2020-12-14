@@ -43,10 +43,10 @@ namespace ZarNet
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            /*services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
+           /* services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
             services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
-
 */
+
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = Configuration.GetConnectionString("Authentication:Facebook:AppId");

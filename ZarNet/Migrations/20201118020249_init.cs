@@ -257,8 +257,7 @@ namespace ZarNet.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Post_CompanyId",
                 table: "Post",
-                column: "CompanyId",
-                unique: true);
+                column: "CompanyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
