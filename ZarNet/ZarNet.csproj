@@ -16,12 +16,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
-    <PackageReference Include="DevExtreme.AspNet.Core" Version="20.2.3" />
+    <PackageReference Include="DevExtreme.AspNet.Core" Version="20.2.4" />
     <PackageReference Include="DevExtreme.AspNet.Data" Version="2.7.1" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DismissedDevExtremeVersion="20.2.3" />
+      <UserProperties DismissedDevExtremeVersion="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

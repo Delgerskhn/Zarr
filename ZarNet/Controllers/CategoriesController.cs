@@ -22,7 +22,8 @@ namespace ZarNet.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Category.ToListAsync());
+            var list = await _context.Category.ToListAsync();
+            return View(list);
         }
 
         // GET: Categories/Details/5
@@ -46,6 +47,9 @@ namespace ZarNet.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
+           var cats = _context.Category.ToList();
+            var catsSelect = new SelectList(cats, "CategoryId", "Name");
+            ViewBag.Categories = catsSelect;
             return View();
         }
 
