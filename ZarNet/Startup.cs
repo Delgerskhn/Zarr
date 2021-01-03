@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Globalization;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using ZarNet.Services;
 
 namespace ZarNet
 {
@@ -59,22 +61,33 @@ namespace ZarNet
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-          
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = Configuration.GetConnectionString("Authentication:Facebook:AppId");
                 facebookOptions.AppSecret = Configuration.GetConnectionString("Authentication:Facebook:AppSecret");
             });
-            services.AddAuthentication()
-            .AddGoogle(options =>
+            services.AddAuthentication().AddGoogle(options =>
             {
                 options.ClientId = Configuration.GetConnectionString("Authentication:Google:ClientId");
                 options.ClientSecret = Configuration.GetConnectionString("Authentication:Google:ClientSecret");
             });
 
+            //The following code changes all data protection tokens timeout period to 3 hours
+            services.Configure<DataProtectionTokenProviderOptions>(o =>
+                o.TokenLifespan = TimeSpan.FromHours(3));
 
+            //email service
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
 
+            //Email and activity timeout settings
+            services.ConfigureApplicationCookie(o => {
+                o.ExpireTimeSpan = TimeSpan.FromDays(14);
+                o.SlidingExpiration = true;
+            });
+
+            //language localization service
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             #region snippet1
