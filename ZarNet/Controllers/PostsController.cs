@@ -104,8 +104,8 @@ namespace ZarNet.Controllers
         // GET: Posts1/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "CategoryId");
-            ViewData["CompanyId"] = new SelectList(_context.Company, "CompanyId", "CompanyId");
+            ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "Name");
+            ViewData["CompanyId"] = new SelectList(_context.Company, "CompanyId", "Name");
             return View();
         }
 

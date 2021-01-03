@@ -26,6 +26,12 @@ namespace ZarNet.Controllers
             return View(list);
         }
 
+        [HttpGet]
+        public async Task<List<Category>> GetCategories()
+        {
+            return await _context.Category.ToListAsync();
+        }
+
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -58,7 +64,7 @@ namespace ZarNet.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,ParentId,Name")] Category category)
+        public async Task<IActionResult> Create([Bind("ParentId,Name")] Category category)
         {
             if (ModelState.IsValid)
             {

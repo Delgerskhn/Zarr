@@ -23,22 +23,26 @@ namespace ZarNet.Data
                 context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
-
+         /*   context.Database.EnsureDeleted();
+            context.Database.Migrate();*/
             if (!context.Post.Any())
             {
                 System.Console.WriteLine("Adding data");
                 Models.Category cat = new Models.Category()
                 {
-                    CategoryId = 2,
                     ParentId = 1,
                     Name = "Barilga"
                 };
                 context.Category.AddRange(
                     new Models.Category()
                     {
-                        CategoryId = 1,
                         ParentId = 0,
                         Name = "Ul hodloh"
+                    },
+                    new Models.Category()
+                    {
+                        ParentId = 0,
+                        Name = "Cars"
                     },
                     cat
                 );
