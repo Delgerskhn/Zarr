@@ -35,11 +35,6 @@ namespace ZarNet.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        public IActionResult AddPost()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
