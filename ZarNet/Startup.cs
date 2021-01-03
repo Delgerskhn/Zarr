@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace ZarNet
 {
@@ -83,6 +84,18 @@ namespace ZarNet
                 .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             #endregion
 
+            services.Configure<RequestLocalizationOptions>(opt =>
+            {
+                var supportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("mn")
+                };
+                opt.DefaultRequestCulture = new RequestCulture("mn");
+                opt.SupportedCultures = supportedCultures;
+                opt.SupportedUICultures = supportedCultures;
+            });
+
             services.AddRazorPages();
 
 
@@ -134,12 +147,14 @@ namespace ZarNet
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            var supportedCultures = new[] { "en", "mn" };
+            app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+           /* var supportedCultures = new[] { "en", "mn" };
             var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
                 .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
+                .AddSupportedUICultures(supportedCultures);*//*
             app.UseRequestLocalization(localizationOptions);
-
+*/
             app.UseRouting();
 
             app.UseAuthentication();
