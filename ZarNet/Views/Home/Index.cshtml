@@ -15,11 +15,20 @@
     .RootValue(0)
     .ParentIdExpr("ParentCategoryId")
     .RemoteOperations(o => o.Filtering(true).Grouping(true).Sorting(true))
+    .SearchPanel(seachPanel => seachPanel
+        .Visible(true)
+        .Width(250)
+    )
+    .HeaderFilter(headerFilter => headerFilter.Visible(true))
+    .Selection(s => s
+        .Mode(SelectionMode.Single)
+    )
+    .ColumnChooser(cc => cc.Enabled(true))
+    .ColumnAutoWidth(true)
+    .WordWrapEnabled(true)
+    .ShowBorders(true)
     .Columns(columns => {
 
-        columns.AddFor(m => m.CategoryId);
-
-        columns.AddFor(m => m.ParentCategoryId);
 
         columns.AddFor(m => m.CategoryName);
 

@@ -18,6 +18,6 @@ namespace ZarNet.Data
         public DbSet<Post> Post { get; set; }
         public DbSet<Company> Company { get; set; }
         public DbSet<Category> Category {  get; set; }
-
+        
     }
 }

@@ -1,8 +1,10 @@
 ﻿using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -15,59 +17,61 @@ using ZarNet.Models;
 
 namespace ZarNet.Controllers
 {
-    [Route("api/[controller]/[action]")]
     public class PostsController : Controller
     {
         private ApplicationDbContext _context;
+        private readonly IHtmlLocalizer<PostsController> _localizer;
 
-        public PostsController(ApplicationDbContext context) {
+        public PostsController(ApplicationDbContext context, IHtmlLocalizer<PostsController> localizer) {
             _context = context;
+            _localizer = localizer;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var post = await _context.Post
+               .FirstOrDefaultAsync(m => m.PostId == id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var test = _localizer["Title"];
+            ViewData["Title"] = test;
+            return View(post);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetPostView(DataSourceLoadOptions loadOptions)
         {
-            var query = _context.Category.Join(_context.Post, cat => cat.CategoryId, post => post.CategoryId,
-                (c, d) => new PostView
-                {
-                    CategoryId = c.CategoryId,
-                    ParentCategoryId = c.ParentId,
-                    CategoryName = c.Name,
-                    CompanyId = d.CompanyId,
-                    CompanyName = d.Company.Name,
-                    Description = d.Description,
-                    Img = d.Img,
-                    MarkCode = d.MarkCode,
-                    Price = d.Price,
-                    Title = d.Name
-                }
-                );
-
-            var postView = 
-                from c in _context.Category
-                join p in _context.Post on c.CategoryId equals p.CategoryId into Details
-                from d in Details.DefaultIfEmpty()
-                           select new PostView
-                           {
-                               CategoryId = c.CategoryId,
-                               ParentCategoryId = c.ParentId,
-                               CategoryName = c.Name,
-                               CompanyId = d.CompanyId,
-                               CompanyName = d.Company.Name,
-                               Description = d.Description,
-                               Img = d.Img,
-                               MarkCode = d.MarkCode,
-                               Price = d.Price,
-                               Title = d.Name
-                           };
+            var query = from c in _context.Category
+                        from p in _context.Post.Where(p => c.CategoryId == p.CategoryId).DefaultIfEmpty()
+                        select new PostView
+                        {
+                            CategoryId = c.CategoryId ,
+                            ParentCategoryId = c.ParentId,
+                            CategoryName = c.Name,
+                            CompanyId = p==null? 0 : p.CompanyId,
+                            CompanyName = p==null? "": p.Company.Name,
+                            Description = p==null ? "" : p.Description,
+                            Img = p == null ? "" : p.Img,
+                            MarkCode = p == null? "" : p.MarkCode,
+                            Price = p == null? "" : p.Price,
+                            Title = p == null? "" : p.Name
+                        };
 
             // If you work with a large amount of data, consider specifying the PaginateViaPrimaryKey and PrimaryKey properties.
             // In this case, keys and data are loaded in separate queries. This can make the SQL execution plan more efficient.
             // Refer to the topic https://github.com/DevExpress/DevExtreme.AspNet.Data/issues/336.
             // loadOptions.PrimaryKey = new[] { "PostId" };
             // loadOptions.PaginateViaPrimaryKey = true;
-
-            return Json(await DataSourceLoader.LoadAsync(postView, loadOptions));
+            var data = await DataSourceLoader.LoadAsync(query, loadOptions);
+            return Json(data);
         }
 
         [HttpGet]

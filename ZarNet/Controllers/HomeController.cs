@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ZarNet.Models;
@@ -22,7 +23,6 @@ namespace ZarNet.Controllers
         {
             return View();
         }
-
         public IActionResult AddPost()
         {
             return View();

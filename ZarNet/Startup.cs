@@ -12,6 +12,9 @@ using ZarNet.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
+using System.Globalization;
 
 namespace ZarNet
 {
@@ -21,31 +24,41 @@ namespace ZarNet
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
+        private string GetHerokuConnectionString()
+        {
+            // Get the connection string from the ENV variables
+            string connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
+            // parse the connection string
+            var databaseUri = new Uri(connectionUrl);
+
+            string db = databaseUri.LocalPath.TrimStart('/');
+            string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
+
+            return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            string dbDevConnectionStr = Configuration.GetConnectionString("DefaultConnection");
+            string connectionString = "";
+            bool isDevelopment= Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            if (isDevelopment)
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnectionProd")));
-            }
-            else
+                connectionString = dbDevConnectionStr;
+            } else
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                connectionString = GetHerokuConnectionString();
             }
+            Console.Out.WriteLine(connectionString);
+            services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationDbContext>(
+               options => options.UseNpgsql(connectionString)
+           );
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
-           /* services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.EnsureDeleted();
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
-*/
+          
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
@@ -58,8 +71,51 @@ namespace ZarNet
                 options.ClientId = Configuration.GetConnectionString("Authentication:Google:ClientId");
                 options.ClientSecret = Configuration.GetConnectionString("Authentication:Google:ClientSecret");
             });
-            services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+
+
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            #region snippet1
+            services.AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization()
+                .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            #endregion
+
             services.AddRazorPages();
+
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,7 +124,6 @@ namespace ZarNet
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -78,6 +133,12 @@ namespace ZarNet
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            var supportedCultures = new[] { "en", "mn" };
+            var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseRouting();
 
@@ -91,6 +152,8 @@ namespace ZarNet
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            PrepDB.PrepPopulation(app, env.IsDevelopment());
+
         }
     }
 }
