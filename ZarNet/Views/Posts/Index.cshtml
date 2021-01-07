@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ZarNet.Models.Post>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_DevExtremeLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="d-inline-flex">
+    <button onclick="filter('Waiting')" class="btn btn-primary">Waiting</button>
+    <button onclick="filter('Declined')" class="btn btn-primary">Declined</button>
+    <button onclick="filter('Approved')" class="btn btn-primary">Approved</button>
+</div>
+@(Html.DevExtreme().DataGrid<ZarNet.Models.Post>()
+    .DataSource(ds => ds.Mvc()
+        .Controller("Posts")
+        .LoadAction("Get")
+        .UpdateAction("Put")
+        .DeleteAction("Delete")
+        .Key("PostId")
+    )
+    .RemoteOperations(true)
+    .ShowBorders(true)
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Columns(columns => {
+
+        columns.AddFor(m => m.PostId);
+
+        columns.AddFor(m => m.Title);
+
+        columns.AddFor(m => m.MarkCode);
+
+        columns.AddFor(m => m.Description);
+
+        columns.AddFor(m => m.Price);
+
+        columns.AddFor(m => m.Img);
+
+        columns.AddFor(m => m.CompanyId).Lookup(lookup => lookup
+            .DataSource(ds => ds.WebApi().Controller("Posts").LoadAction("CompanyLookup").Key("Value"))
+            .ValueExpr("Value")
+            .DisplayExpr("Text")
+        );
+
+        columns.AddFor(m => m.CategoryId).Lookup(lookup => lookup
+            .DataSource(ds => ds.WebApi().Controller("Posts").LoadAction("CategoryLookup").Key("Value"))
+            .ValueExpr("Value")
+            .DisplayExpr("Text")
+        );
+
+        columns.AddFor(m => m.Status);
+
+        columns.AddFor(m => m.CreatedOn);
+
+        columns.AddFor(m => m.UpdatedOn);
+    })
+    .Editing(e => e
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+    )
+)
+
+<script>
+    function updateQueryStringParameter(uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        else {
+            return uri + separator + key + "=" + value;
+        }
+    }
+    function filter(val) {
+        let uri = updateQueryStringParameter(window.location.href, 'filter', val);
+        console.log(uri);
+        window.location.href = uri;
+@*        window.location.pathname = '/Posts?filter=' + val;
+*@    }
+</script>

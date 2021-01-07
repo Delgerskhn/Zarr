@@ -9,6 +9,7 @@ namespace ZarNet.Models
     public class PostView
     {
         public int CategoryId { get; set; }
+        public int PostId { get; set; }
         public int ParentCategoryId { get; set; }
         public string CategoryName { get; set; }
         public int CompanyId { get; set; }

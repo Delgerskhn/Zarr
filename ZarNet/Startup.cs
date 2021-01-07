@@ -54,6 +54,7 @@ namespace ZarNet
             {
                 connectionString = GetHerokuConnectionString();
             }
+            //dependency injection
             Console.Out.WriteLine(connectionString);
             services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationDbContext>(
                options => options.UseNpgsql(connectionString)

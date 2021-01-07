@@ -28,6 +28,7 @@
     .ColumnChooser(cc => cc.Enabled(true))
     .ColumnAutoWidth(true)
     .WordWrapEnabled(true)
+    .OnRowClick("onRowClick")
     .ShowBorders(true)
     .Columns(columns => {
 
@@ -47,3 +48,18 @@
         columns.AddFor(m => m.CompanyName);
     })
 )
+<script>
+    let lastRowSelection = {};
+    function onInitialized() { }
+    function onRowClick(e) {
+        console.log(e)
+        if (lastRowSelection.rowIndex == e.rowIndex && (new Date() - lastRowSelection.time) < 300) {
+            console.log('double click')
+            if (e.data.PostId != 0) {
+                window.location.pathname = "/Posts/Details/" + e.data.PostId;
+            }
+        }
+        lastRowSelection.rowIndex = e.rowIndex;
+        lastRowSelection.time = new Date();
+    }
+</script>

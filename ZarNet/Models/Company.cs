@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ZarNet.Models
 {
-    public class Company
+    public class Company:BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

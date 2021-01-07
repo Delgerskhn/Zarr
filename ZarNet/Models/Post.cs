@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -8,12 +9,13 @@ using ZarNet.Models;
 
 namespace ZarNet.Models
 {
-    public class Post
+    public class Post : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PostId { get; set; }
-        public string Name { get; set; }
+        [Required]
+        public string Title { get; set; }
         public string MarkCode { get; set; }
         public string Description { get; set; }
         public string Price { get; set; }
@@ -22,5 +24,7 @@ namespace ZarNet.Models
         public Company Company { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+        [DefaultValue("Waiting")]
+        public string Status { get; set; }
     }
 }

@@ -31,6 +31,12 @@ namespace ZarNet.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index()
+        {
+            var list = _context.Post.ToList();
+            return View(list);
+        }
+
         // GET: Posts1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -55,7 +61,7 @@ namespace ZarNet.Controllers
         public async Task<IActionResult> GetPostView(DataSourceLoadOptions loadOptions)
         {
             var query = from c in _context.Category
-                        from p in _context.Post.Where(p => c.CategoryId == p.CategoryId).DefaultIfEmpty()
+                        from p in _context.Post.Where(p => c.CategoryId == p.CategoryId && p.Status == PostStatus.Approved.ToString()).DefaultIfEmpty()
                         select new PostView
                         {
                             CategoryId = c.CategoryId ,
@@ -67,7 +73,8 @@ namespace ZarNet.Controllers
                             Img = p == null ? "" : p.Img,
                             MarkCode = p == null? "" : p.MarkCode,
                             Price = p == null? "" : p.Price,
-                            Title = p == null? "" : p.Name
+                            Title = p == null? "" : p.Title,
+                            PostId = p==null? 0 : p.PostId
                         };
 
             // If you work with a large amount of data, consider specifying the PaginateViaPrimaryKey and PrimaryKey properties.
@@ -80,10 +87,11 @@ namespace ZarNet.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions) {
-            var post = _context.Post.Select(i => new {
+        public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions, string filter = "Waiting") {
+
+            var post = _context.Post.Where(r=>r.Status == filter).Select(i => new {
                 i.PostId,
-                i.Name,
+                i.Title,
                 i.MarkCode,
                 i.Description,
                 i.Price,
@@ -243,7 +251,7 @@ namespace ZarNet.Controllers
 
         private void PopulateModel(Post model, IDictionary values) {
             string POST_ID = nameof(ZarNet.Models.Post.PostId);
-            string NAME = nameof(ZarNet.Models.Post.Name);
+            string NAME = nameof(ZarNet.Models.Post.Title);
             string MARK_CODE = nameof(ZarNet.Models.Post.MarkCode);
             string DESCRIPTION = nameof(ZarNet.Models.Post.Description);
             string PRICE = nameof(ZarNet.Models.Post.Price);
@@ -256,7 +264,7 @@ namespace ZarNet.Controllers
             }
 
             if(values.Contains(NAME)) {
-                model.Name = Convert.ToString(values[NAME]);
+                model.Title = Convert.ToString(values[NAME]);
             }
 
             if(values.Contains(MARK_CODE)) {

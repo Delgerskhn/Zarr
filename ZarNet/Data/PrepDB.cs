@@ -52,7 +52,7 @@ namespace ZarNet.Data
                 {
                     Company = comp,
                     Category = cat,
-                    Name = "ul hodloh",
+                    Title = "ul hodloh",
                     Price = "sdlkfj"
                 });
                 context.SaveChanges();
