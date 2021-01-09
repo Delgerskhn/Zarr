@@ -1,5 +1,6 @@
 ﻿using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -12,10 +13,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ZarNet.Data;
 using ZarNet.Models;
+using ZarNet.ViewModels;
 
 namespace ZarNet.Controllers
 {
@@ -24,16 +27,22 @@ namespace ZarNet.Controllers
         private ApplicationDbContext _context;
         private readonly IHtmlLocalizer<PostsController> _localizer;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public PostsController(ApplicationDbContext context, IHtmlLocalizer<PostsController> localizer, UserManager<IdentityUser> userManager) {
+        public PostsController(ApplicationDbContext context, 
+            IHtmlLocalizer<PostsController> localizer,
+            IWebHostEnvironment hostEnvironment,
+            UserManager<IdentityUser> userManager) {
             _context = context;
             _localizer = localizer;
             _userManager = userManager;
+            webHostEnvironment = hostEnvironment;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string filter="Waiting")
         {
             var list = _context.Post.ToList();
+            ViewData["PostStatus"] = filter;
             return View(list);
         }
 
@@ -87,9 +96,9 @@ namespace ZarNet.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions, string filter = "Waiting") {
+        public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions, string postStatus = "Waiting") {
 
-            var post = _context.Post.Where(r=>r.Status == filter).Select(i => new {
+            var post = _context.Post.Where(r=>r.Status == postStatus).Select(i => new {
                 i.PostId,
                 i.Title,
                 i.MarkCode,
@@ -97,7 +106,10 @@ namespace ZarNet.Controllers
                 i.Price,
                 i.Img,
                 i.CompanyId,
-                i.CategoryId
+                i.CategoryId,
+                i.Status,
+                i.CreatedOn,
+                i.UpdatedOn
             });
 
             // If you work with a large amount of data, consider specifying the PaginateViaPrimaryKey and PrimaryKey properties.
@@ -122,17 +134,47 @@ namespace ZarNet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PostId,Name,MarkCode,Description,Price,Img,CompanyId,CategoryId")] Post post)
+        public async Task<IActionResult> Create([Bind("PostId,Title,MarkCode,Description,Price,Img,CompanyId,CategoryId")] PostCreate postView)
         {
             if (ModelState.IsValid)
             {
+                string uniqueFileName = UploadedFile(postView);
+                Post post = new Post
+                {
+                    Title = postView.Title,
+                    MarkCode = postView.MarkCode,
+                    Description = postView.Description,
+                    Price = postView.Price,
+                    Img = uniqueFileName,
+                    CompanyId = postView.CompanyId,
+                    CategoryId = postView.CategoryId,
+                    Status = PostStatus.Waiting.ToString()
+                };
+
                 _context.Add(post);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "CategoryId", post.CategoryId);
-            ViewData["CompanyId"] = new SelectList(_context.Company, "CompanyId", "CompanyId", post.CompanyId);
-            return View(post);
+            ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "Name", postView.CategoryId);
+            ViewData["CompanyId"] = new SelectList(_context.Company, "CompanyId", "Name", postView.CompanyId);
+            return View(postView);
+        }
+
+        private string UploadedFile(PostCreate model)
+        {
+            string uniqueFileName = null;
+
+            if (model.Img != null)
+            {
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Img.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.Img.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         // GET: Posts1/Edit/5
@@ -153,6 +195,23 @@ namespace ZarNet.Controllers
             return View(post);
         }
 
+        //update record for dx treelist 
+        [HttpPut]
+        public async Task<IActionResult> Put(int key, string values)
+        {
+            var model = await _context.Post.FirstOrDefaultAsync(item => item.PostId == key);
+            if (model == null)
+                return StatusCode(409, "Object not found");
+
+            var valuesDict = JsonConvert.DeserializeObject<IDictionary>(values);
+            PopulateModel(model, valuesDict);
+
+            if (!TryValidateModel(model))
+                return BadRequest(GetFullErrorMessage(ModelState));
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         // POST: Posts1/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -210,6 +269,16 @@ namespace ZarNet.Controllers
             return View(post);
         }
 
+        [HttpDelete]
+        public async Task Delete(int key)
+        {
+            var model = await _context.Post.FirstOrDefaultAsync(item => item.PostId == key);
+
+            _context.Post.Remove(model);
+            await _context.SaveChangesAsync();
+        }
+
+
         // POST: Posts1/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -251,44 +320,69 @@ namespace ZarNet.Controllers
 
         private void PopulateModel(Post model, IDictionary values) {
             string POST_ID = nameof(ZarNet.Models.Post.PostId);
-            string NAME = nameof(ZarNet.Models.Post.Title);
+            string TITLE = nameof(ZarNet.Models.Post.Title);
             string MARK_CODE = nameof(ZarNet.Models.Post.MarkCode);
             string DESCRIPTION = nameof(ZarNet.Models.Post.Description);
             string PRICE = nameof(ZarNet.Models.Post.Price);
             string IMG = nameof(ZarNet.Models.Post.Img);
             string COMPANY_ID = nameof(ZarNet.Models.Post.CompanyId);
             string CATEGORY_ID = nameof(ZarNet.Models.Post.CategoryId);
-
-            if(values.Contains(POST_ID)) {
+            string STATUS = nameof(Post.Status);
+            string CREATED_ON = nameof(Post.CreatedOn);
+            string UPDATED_ON = nameof(Post.UpdatedOn);
+            if (values.Contains(POST_ID))
+            {
                 model.PostId = Convert.ToInt32(values[POST_ID]);
             }
 
-            if(values.Contains(NAME)) {
-                model.Title = Convert.ToString(values[NAME]);
+            if (values.Contains(TITLE))
+            {
+                model.Title = Convert.ToString(values[TITLE]);
             }
 
-            if(values.Contains(MARK_CODE)) {
+            if (values.Contains(MARK_CODE))
+            {
                 model.MarkCode = Convert.ToString(values[MARK_CODE]);
             }
 
-            if(values.Contains(DESCRIPTION)) {
+            if (values.Contains(DESCRIPTION))
+            {
                 model.Description = Convert.ToString(values[DESCRIPTION]);
             }
 
-            if(values.Contains(PRICE)) {
+            if (values.Contains(PRICE))
+            {
                 model.Price = Convert.ToString(values[PRICE]);
             }
 
-            if(values.Contains(IMG)) {
+            if (values.Contains(IMG))
+            {
                 model.Img = Convert.ToString(values[IMG]);
             }
 
-            if(values.Contains(COMPANY_ID)) {
+            if (values.Contains(COMPANY_ID))
+            {
                 model.CompanyId = Convert.ToInt32(values[COMPANY_ID]);
             }
 
-            if(values.Contains(CATEGORY_ID)) {
+            if (values.Contains(CATEGORY_ID))
+            {
                 model.CategoryId = Convert.ToInt32(values[CATEGORY_ID]);
+            }
+
+            if (values.Contains(STATUS))
+            {
+                model.Status = Convert.ToString(values[STATUS]);
+            }
+
+            if (values.Contains(CREATED_ON))
+            {
+                model.CreatedOn = Convert.ToDateTime(values[CREATED_ON]);
+            }
+
+            if (values.Contains(UPDATED_ON))
+            {
+                model.UpdatedOn = Convert.ToDateTime(values[UPDATED_ON]);
             }
         }
 

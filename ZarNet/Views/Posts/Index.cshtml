@@ -20,12 +20,14 @@
     .DataSource(ds => ds.Mvc()
         .Controller("Posts")
         .LoadAction("Get")
+        .LoadParams(new { postStatus = ViewBag.PostStatus})
         .UpdateAction("Put")
         .DeleteAction("Delete")
         .Key("PostId")
     )
     .RemoteOperations(true)
     .ShowBorders(true)
+    .OnRowClick("onRowClick")
     .FilterRow(f => f.Visible(true))
     .HeaderFilter(f => f.Visible(true))
     .GroupPanel(p => p.Visible(true))
@@ -68,6 +70,18 @@
 )
 
 <script>
+    let lastRowSelection = {};
+    function onRowClick(e) {
+        console.log(e)
+        if (lastRowSelection.rowIndex == e.rowIndex && (new Date() - lastRowSelection.time) < 300) {
+            console.log('double click')
+            if (e.data.PostId != 0) {
+                window.location.pathname = "/Posts/Details/" + e.data.PostId;
+            }
+        }
+        lastRowSelection.rowIndex = e.rowIndex;
+        lastRowSelection.time = new Date();
+    }
     function updateQueryStringParameter(uri, key, value) {
         var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
         var separator = uri.indexOf('?') !== -1 ? "&" : "?";

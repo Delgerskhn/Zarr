@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ZarNet.Models;
+using ZarNet.ViewModels;
 
-namespace ZarNet.Models
+namespace ZarNet.ViewModels
 {
     public class PostView
     {

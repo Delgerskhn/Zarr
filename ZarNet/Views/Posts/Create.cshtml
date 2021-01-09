@@ -1,21 +1,23 @@
-﻿@model ZarNet.Models.Post
-
+﻿@model ZarNet.ViewModels.PostCreate
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_DevExtremeLayout.cshtml";
 }
-<h1>Create</h1>
+<h1>@Localizer["CreatePost"]</h1>
 
 <h4>Post</h4>
 <hr />
 <div class="row">
     <div class="col-md-4 col-lg-10">
-        <form asp-action="Create">
+        <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                <label asp-for="CategoryId" class="control-label">@Localizer["Category"]</label>
+                <input asp-for="CategoryId" id="category-id" type="hidden" />
+                <input id="category-value" class="form-control" disabled placeholder="@Localizer["Choose category"]" type="text" />
                 <div class="d-flex justify-content-around">
                     @(Html.DevExtreme().TreeList<ZarNet.Models.Category>()
                         .DataSource(ds => ds.Mvc()
@@ -35,41 +37,46 @@
                         })
                         .ColumnAutoWidth(true)
                         .OnInitialized("onInitialized")
+                        .AutoExpandAll(false)
                         .OnRowClick("onRowClick")
-    @*                    .OnInitialized("treeList_onInitialized")
-    *@                )
+                    )
                 </div>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
 
 
             </div>
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
+                <label asp-for="Title" class="control-label">@Localizer["Title"]</label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MarkCode" class="control-label"></label>
+                <label asp-for="MarkCode" class="control-label">@Localizer["MarkCode"]</label>
                 <input asp-for="MarkCode" class="form-control" />
                 <span asp-validation-for="MarkCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="control-label">@Localizer["Description"]</label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
+                <label asp-for="Price" class="control-label">@Localizer["Price"]</label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Img" class="control-label"></label>
-                <input asp-for="Img" class="form-control" />
-                <span asp-validation-for="Img" class="text-danger"></span>
+                <div class="form-group">
+                    <label asp-for="Img" class="control-label">@Localizer["Image"]</label>
+                    <div class="custom-file">
+                        <input asp-for="Img" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">@Localizer["ChooseFile"]</label>
+                    </div>
+                    <span asp-validation-for="Img" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="CompanyId" class="control-label"></label>
+                <label asp-for="CompanyId" class="control-label">@Localizer["Company"]</label>
                 <select asp-for="CompanyId" class="form-control" asp-items="ViewBag.CompanyId"></select>
             </div>
 
@@ -87,12 +94,30 @@
 <script>
     let lastRowSelection = {};
     function onInitialized() { }
+
+    function getTreeList() {
+        return $("#CategoryList").dxTreeList("instance");
+    }
+    function collapseAll() {
+        var ds = getTreeList();
+        for (let i = 0; i < 4; i++) {
+            ds.collapseRow(i);
+        }
+    }
     function onRowClick(e) {
         if (lastRowSelection.rowIndex == e.rowIndex && (new Date() - lastRowSelection.time) < 300) {
-            console.log('double click')
+            console.log('double click', e)
+            collapseAll();
             $("#category-id").val(e.data.CategoryId);
+            $("#category-value").val(e.data.Name)
         }
         lastRowSelection.rowIndex = e.rowIndex;
         lastRowSelection.time = new Date();
     }
+
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
 </script>

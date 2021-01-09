@@ -46,11 +46,12 @@ namespace ZarNet
         {
             string dbDevConnectionStr = Configuration.GetConnectionString("DefaultConnection");
             string connectionString = "";
-            bool isDevelopment= Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
             if (isDevelopment)
             {
                 connectionString = dbDevConnectionStr;
-            } else
+            }
+            else
             {
                 connectionString = GetHerokuConnectionString();
             }
@@ -83,7 +84,8 @@ namespace ZarNet
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
             //Email and activity timeout settings
-            services.ConfigureApplicationCookie(o => {
+            services.ConfigureApplicationCookie(o =>
+            {
                 o.ExpireTimeSpan = TimeSpan.FromDays(14);
                 o.SlidingExpiration = true;
             });
@@ -163,12 +165,12 @@ namespace ZarNet
 
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
-           /* var supportedCultures = new[] { "en", "mn" };
-            var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);*//*
-            app.UseRequestLocalization(localizationOptions);
-*/
+            /* var supportedCultures = new[] { "en", "mn" };
+             var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+                 .AddSupportedCultures(supportedCultures)
+                 .AddSupportedUICultures(supportedCultures);*//*
+             app.UseRequestLocalization(localizationOptions);
+ */
             app.UseRouting();
 
             app.UseAuthentication();

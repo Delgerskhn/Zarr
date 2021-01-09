@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using ZarNet.Models;
 using ZarNet.ViewModels;
 
-namespace ZarNet.Models
+namespace ZarNet.ViewModels
 {
-    public class Post : BaseEntity
+    public class PostCreate : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +21,9 @@ namespace ZarNet.Models
         public string MarkCode { get; set; }
         public string Description { get; set; }
         public string Price { get; set; }
-        public string Img { get; set; }
+        [Required(ErrorMessage = "Please choose profile image")]
+        [Display(Name = "Profile Picture")]
+        public IFormFile Img { get; set; }
         public int CompanyId { get; set; }
         public Company Company { get; set; }
         public int CategoryId { get; set; }

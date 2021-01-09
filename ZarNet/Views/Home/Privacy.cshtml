@@ -1,7 +1,6 @@
-﻿@{
-    ViewData["Title"] = "Дүрэм журам";
-}
-<h1>@ViewData["Title"]</h1>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<h1>@Localizer["Title"]</h1>
 
 <partial name="_PrivacyPartial" />
 
