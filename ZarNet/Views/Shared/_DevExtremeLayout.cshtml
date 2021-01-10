@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -74,19 +76,19 @@
                 <partial name="_LoginPartial" />
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Зарууд</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">@Localizer["Posts"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Create">Зар нэмэх</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Create">@Localizer["Add post"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">Компаниуд</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">@Localizer["Companies"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Ангилалууд</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">@Localizer["Categories"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Дүрэм журам</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy policy"]</a>
                     </li>
                     <li class="nav-item">
                         <div class="nav-link">
