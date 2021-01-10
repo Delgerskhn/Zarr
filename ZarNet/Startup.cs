@@ -60,7 +60,7 @@ namespace ZarNet
             services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationDbContext>(
                options => options.UseNpgsql(connectionString)
            );
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
@@ -148,7 +148,7 @@ namespace ZarNet
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -184,7 +184,7 @@ namespace ZarNet
                 endpoints.MapRazorPages();
             });
             PrepDB.PrepPopulation(app, env.IsDevelopment());
-
+            PrepDB.CreateRoles(serviceProvider);
         }
     }
 }

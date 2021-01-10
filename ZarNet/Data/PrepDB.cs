@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ZarNet.Models;
 
 namespace ZarNet.Data
 {
     public static class PrepDB
     {
+
         public static void PrepPopulation(IApplicationBuilder app, bool isDevelopment)
         {
             using (var servicScope = app.ApplicationServices.CreateScope())
@@ -62,5 +66,52 @@ namespace ZarNet.Data
                 System.Console.WriteLine("Already have data");
             }
         }
+
+        public static void CreateRoles(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            string[] roleNames = { "Admin", "Client" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = RoleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult();
+                // ensure that the role does not exist
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: 
+                    roleResult = RoleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+                }
+            }
+
+            // find the user with the admin email 
+            var _user = UserManager.FindByEmailAsync("admin@email.com").GetAwaiter().GetResult();
+
+            // check if the user exists
+            if (_user == null)
+            {
+                //Here you could create the super admin who will maintain the web app
+                var poweruser = new IdentityUser
+                {
+                    UserName = "Admin",
+                    Email = "admin@email.com",
+                    EmailConfirmed = true,
+                };
+                string adminPassword = "Pass1234!";
+
+                var createPowerUser = UserManager.CreateAsync(poweruser, adminPassword).GetAwaiter().GetResult();
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role
+                     UserManager.AddToRoleAsync(poweruser, "Admin").GetAwaiter().GetResult();
+
+                }
+            }
+            return;
+        }
+
+
     }
 }
