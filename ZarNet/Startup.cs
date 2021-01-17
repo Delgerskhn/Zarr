@@ -28,41 +28,15 @@ namespace ZarNet
             Configuration = configuration;
         }
         public IConfiguration Configuration { get; }
-        private string GetHerokuConnectionString()
-        {
-            // Get the connection string from the ENV variables
-            string connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-            // parse the connection string
-            var databaseUri = new Uri(connectionUrl);
-
-            string db = databaseUri.LocalPath.TrimStart('/');
-            string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
-
-            return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
-        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string dbDevConnectionStr = Configuration.GetConnectionString("DefaultConnection");
-            string connectionString = "";
-            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-            if (isDevelopment)
-            {
-                connectionString = dbDevConnectionStr;
-            }
-            else
-            {
-                connectionString = GetHerokuConnectionString();
-            }
-            //dependency injection
-            Console.Out.WriteLine(connectionString);
-            services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationDbContext>(
-               options => options.UseNpgsql(connectionString)
-           );
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+              .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
@@ -184,7 +158,7 @@ namespace ZarNet
                 endpoints.MapRazorPages();
             });
             PrepDB.PrepPopulation(app, env.IsDevelopment());
-            PrepDB.CreateRoles(serviceProvider);
-        }
+/*            PrepDB.CreateRoles(serviceProvider);
+*/        }
     }
 }

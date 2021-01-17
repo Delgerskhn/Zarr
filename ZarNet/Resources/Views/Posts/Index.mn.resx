@@ -117,28 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Approved" xml:space="preserve">
+    <value>Зөвшөөрсөн</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Ангилал</value>
   </data>
   <data name="Company" xml:space="preserve">
     <value>Компани</value>
   </data>
+  <data name="Created" xml:space="preserve">
+    <value>Үүсгэсэн</value>
+  </data>
+  <data name="Declined" xml:space="preserve">
+    <value>Цуцалсан</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Тайлбар</value>
-  </data>
-  <data name="Image" xml:space="preserve">
-    <value>Зураг</value>
   </data>
   <data name="Markcode" xml:space="preserve">
     <value>Марк код</value>
   </data>
+  <data name="Posts" xml:space="preserve">
+    <value>Зарууд</value>
+  </data>
   <data name="Price" xml:space="preserve">
     <value>Үнэ</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Статус</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Гарчиг</value>
   </data>
-  <data name="Welcome" xml:space="preserve">
-    <value>Тавтай морил</value>
+  <data name="Updated" xml:space="preserve">
+    <value>Шинэчилсэн</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Хүлээж буй</value>
   </data>
 </root>

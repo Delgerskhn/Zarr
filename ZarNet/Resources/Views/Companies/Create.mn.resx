@@ -117,20 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Category" xml:space="preserve">
-    <value>Ангилал</value>
+  <data name="Back to list" xml:space="preserve">
+    <value>Жагсаалт руу буцах</value>
   </data>
   <data name="Company" xml:space="preserve">
     <value>Компани</value>
   </data>
-  <data name="Description" xml:space="preserve">
-    <value>Тайлбар</value>
-  </data>
-  <data name="Image" xml:space="preserve">
-    <value>Зураг</value>
+  <data name="Create" xml:space="preserve">
+    <value>Үүсгэх</value>
   </data>
   <data name="Markcode" xml:space="preserve">
     <value>Марк код</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Нэр</value>
   </data>
   <data name="Price" xml:space="preserve">
     <value>Үнэ</value>

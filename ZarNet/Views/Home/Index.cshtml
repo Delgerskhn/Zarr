@@ -33,19 +33,19 @@
     .Columns(columns => {
 
 
-        columns.AddFor(m => m.CategoryName);
+        columns.AddFor(m => m.CategoryName).Caption(@Localizer["Category"].Value);
 
-        columns.AddFor(m => m.Title);
+        columns.AddFor(m => m.Title).Caption(@Localizer["Title"].Value);
 
-        columns.AddFor(m => m.MarkCode);
+        columns.AddFor(m => m.MarkCode).Caption(@Localizer["MarkCode"].Value);
 
-        columns.AddFor(m => m.Description);
+        columns.AddFor(m => m.Description).Caption(@Localizer["Description"].Value);
 
-        columns.AddFor(m => m.Price);
+        columns.AddFor(m => m.Price).Caption(@Localizer["Price"].Value);
 
-        columns.AddFor(m => m.Img);
+        columns.AddFor(m => m.Img).Caption(@Localizer["Img"].Value);
 
-        columns.AddFor(m => m.CompanyName);
+        columns.AddFor(m => m.CompanyName).Caption(@Localizer["Company"].Value);
     })
 )
 <script>

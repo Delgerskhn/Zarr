@@ -1,20 +1,17 @@
 ﻿@model IEnumerable<ZarNet.Models.Post>
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_DevExtremeLayout.cshtml";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>@Localizer["Posts"]</h1>
 
 <div class="d-inline-flex">
-    <button onclick="filter('Waiting')" class="btn btn-primary">Waiting</button>
-    <button onclick="filter('Declined')" class="btn btn-primary">Declined</button>
-    <button onclick="filter('Approved')" class="btn btn-primary">Approved</button>
+    <button onclick="filter('Waiting')" class="btn btn-primary">@Localizer["Waiting"]</button>
+    <button onclick="filter('Declined')" class="btn btn-primary">@Localizer["Declined"]</button>
+    <button onclick="filter('Approved')" class="btn btn-primary">@Localizer["Approved"]</button>
 </div>
 @(Html.DevExtreme().DataGrid<ZarNet.Models.Post>()
     .DataSource(ds => ds.Mvc()
@@ -33,35 +30,39 @@
     .GroupPanel(p => p.Visible(true))
     .Columns(columns => {
 
-        columns.AddFor(m => m.PostId);
+        columns.AddFor(m => m.Title).Caption(@Localizer["Title"].Value);
 
-        columns.AddFor(m => m.Title);
+        columns.AddFor(m => m.MarkCode).Caption(@Localizer["Markcode"].Value);
 
-        columns.AddFor(m => m.MarkCode);
+        columns.AddFor(m => m.Description).Caption(@Localizer["Description"].Value);
 
-        columns.AddFor(m => m.Description);
+        columns.AddFor(m => m.Price).Caption(@Localizer["Price"].Value);
 
-        columns.AddFor(m => m.Price);
+        columns.AddFor(m => m.Img).Caption(@Localizer["Image"].Value);
 
-        columns.AddFor(m => m.Img);
 
         columns.AddFor(m => m.CompanyId).Lookup(lookup => lookup
             .DataSource(ds => ds.WebApi().Controller("Posts").LoadAction("CompanyLookup").Key("Value"))
             .ValueExpr("Value")
             .DisplayExpr("Text")
-        );
+        ).Caption(@Localizer["Company"].Value);
 
         columns.AddFor(m => m.CategoryId).Lookup(lookup => lookup
             .DataSource(ds => ds.WebApi().Controller("Posts").LoadAction("CategoryLookup").Key("Value"))
             .ValueExpr("Value")
             .DisplayExpr("Text")
-        );
+        ).Caption(@Localizer["Category"].Value);
 
-        columns.AddFor(m => m.Status);
+        columns.AddFor(m => m.Status).Lookup(lookup => lookup
+            .DataSource("getStatus")
+                    .DisplayExpr("Text")
+                    .ValueExpr("Text")
+        )
+        .Caption(@Localizer["Status"].Value);
 
-        columns.AddFor(m => m.CreatedOn);
+        columns.AddFor(m => m.CreatedOn).Caption(@Localizer["Created"].Value);
 
-        columns.AddFor(m => m.UpdatedOn);
+        columns.AddFor(m => m.UpdatedOn).Caption(@Localizer["Updated"].Value);
     })
     .Editing(e => e
         .AllowUpdating(true)
@@ -70,6 +71,11 @@
 )
 
 <script>
+    function getStatus(options) {
+        let list = [{ "Value": 1, "Text": "Declined" }, { "Value": 2, "Text": "Approved" }, { "Value": 3, "Text": "Waiting" }];
+        return list;
+    }
+
     let lastRowSelection = {};
     function onRowClick(e) {
         console.log(e)

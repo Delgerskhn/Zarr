@@ -27,8 +27,8 @@ namespace ZarNet.Data
                 context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
-         /*   context.Database.EnsureDeleted();
-            context.Database.Migrate();*/
+            context.Database.EnsureDeleted();
+            context.Database.Migrate();
             if (!context.Post.Any())
             {
                 System.Console.WriteLine("Adding data");
