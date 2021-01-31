@@ -21,14 +21,14 @@ namespace ZarNet.Data
         }
         public static void SeedData(ApplicationDbContext context, bool isDevelopment)
         {
-            if(!isDevelopment)
+            if (!isDevelopment)
             {
-                System.Console.WriteLine("Applying migrations");
-                context.Database.EnsureDeleted();
-                context.Database.Migrate();
+                // System.Console.WriteLine("Applying migrations");
+                // context.Database.EnsureDeleted();
+                // context.Database.Migrate();
             }
-            context.Database.EnsureDeleted();
-            context.Database.Migrate();
+            // context.Database.EnsureDeleted();
+            // context.Database.Migrate();
             if (!context.Post.Any())
             {
                 System.Console.WriteLine("Adding data");
@@ -105,7 +105,7 @@ namespace ZarNet.Data
                 if (createPowerUser.Succeeded)
                 {
                     //here we tie the new user to the role
-                     UserManager.AddToRoleAsync(poweruser, "Admin").GetAwaiter().GetResult();
+                    UserManager.AddToRoleAsync(poweruser, "Admin").GetAwaiter().GetResult();
 
                 }
             }

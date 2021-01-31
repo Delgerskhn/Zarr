@@ -18,6 +18,7 @@ using System.Globalization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using ZarNet.Services;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 
 namespace ZarNet
 {
@@ -33,7 +34,7 @@ namespace ZarNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
             );
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
               .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -69,6 +70,7 @@ namespace ZarNet
 
             #region snippet1
             services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization()
                 .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
@@ -158,7 +160,8 @@ namespace ZarNet
                 endpoints.MapRazorPages();
             });
             PrepDB.PrepPopulation(app, env.IsDevelopment());
-/*            PrepDB.CreateRoles(serviceProvider);
-*/        }
+            /*            PrepDB.CreateRoles(serviceProvider);
+            */
+        }
     }
 }
